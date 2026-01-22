@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ripasso – Scomposizione di polinomi e Teorema/Regola di Ruffini</title>
+
+  <!-- MathJax config: usare $...$ inline e $$...$$ in display -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$']],
+        displayMath: [['$$', '$$']]
+      },
+      options: {
+        renderActions: {
+          addMenu: [] // menu contestuale off (pulito per lezione)
+        }
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+  <style>
+    :root{
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #3b82f6;
+      --accent2: #10b981;
+      --warn: #f59e0b;
+
+      --shadow: 0 10px 24px rgba(17,24,39,.08);
+      --radius: 16px;
+      --radius-sm: 12px;
+      --maxw: 1080px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(59,130,246,.10), transparent 60%),
+                  radial-gradient(1000px 600px at 90% 20%, rgba(16,185,129,.08), transparent 60%),
+                  var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .wrap{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 22px 18px 60px;
+    }
+
+    header{
+      background: linear-gradient(135deg, rgba(59,130,246,.14), rgba(16,185,129,.10));
+      border: 1px solid rgba(229,231,235,.8);
+      border-radius: var(--radius);
+      padding: 18px 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .title{
+      display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
+      flex-wrap: wrap;
+    }
+
+    h1{
+      font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .meta{
+      color: var(--muted);
+      font-size: .95rem;
+      margin-top: 6px;
+    }
+
+    .pillrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .pill{
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(229,231,235,.95);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: .92rem;
+      color: var(--muted);
+      display:flex; align-items:center; gap:8px;
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent)}
+    .dot.g{background:var(--accent2)}
+    .dot.y{background:var(--warn)}
+
+    .tabs{
+      margin-top: 18px;
+      display:flex; gap:10px; flex-wrap: wrap;
+    }
+    .tabbtn{
+      appearance:none;
+      border: 1px solid rgba(229,231,235,.95);
+      background: rgba(255,255,255,.75);
+      color: var(--ink);
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-weight: 650;
+      letter-spacing:.01em;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease;
+    }
+    .tabbtn:hover{transform: translateY(-1px)}
+    .tabbtn[aria-selected="true"]{
+      background: rgba(59,130,246,.14);
+      border-color: rgba(59,130,246,.40);
+    }
+
+    .panel{
+      margin-top: 14px;
+      background: var(--panel);
+      border: 1px solid rgba(229,231,235,.95);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 920px){
+      .grid.two{grid-template-columns: 1.08fr .92fr;}
+    }
+
+    h2{margin: 0 0 8px; font-size: 1.25rem}
+    h3{margin: 16px 0 8px; font-size: 1.06rem}
+    p{margin: 8px 0; color: var(--ink)}
+    .muted{color:var(--muted)}
+    .callout{
+      border: 1px solid rgba(59,130,246,.22);
+      background: rgba(59,130,246,.07);
+      padding: 12px 12px;
+      border-radius: var(--radius-sm);
+    }
+    .callout.g{
+      border-color: rgba(16,185,129,.22);
+      background: rgba(16,185,129,.07);
+    }
+    .callout.y{
+      border-color: rgba(245,158,11,.28);
+      background: rgba(245,158,11,.10);
+    }
+
+    .steps{
+      border-left: 3px solid rgba(59,130,246,.35);
+      padding-left: 12px;
+      margin: 10px 0;
+    }
+    .steps ol{margin:8px 0 0 18px}
+    .steps li{margin: 6px 0}
+
+    code.k{
+      font-family: var(--mono);
+      font-size: .95em;
+      background: rgba(17,24,39,.04);
+      border: 1px solid rgba(229,231,235,.9);
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    details{
+      border: 1px solid rgba(229,231,235,.95);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      background: rgba(17,24,39,.02);
+    }
+    details + details{margin-top: 10px}
+    summary{
+      cursor:pointer;
+      font-weight: 750;
+      color: var(--ink);
+      outline:none;
+    }
+    summary::-webkit-details-marker{display:none}
+    .sol{
+      margin-top: 10px;
+      color: var(--ink);
+    }
+    .sol .muted{color: var(--muted)}
+    .hr{
+      height:1px; background: var(--line); border:0; margin: 12px 0;
+    }
+
+    .sectionTitle{
+      display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+      flex-wrap:wrap;
+    }
+    .tag{
+      font-size: .85rem;
+      color: var(--muted);
+      border: 1px solid rgba(229,231,235,.95);
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(255,255,255,.7);
+    }
+
+    /* Flashcards */
+    .fcbar{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      margin-bottom: 10px;
+    }
+    .controls{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(229,231,235,.95);
+      background: rgba(255,255,255,.8);
+      padding: 8px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 650;
+    }
+    .btn:hover{border-color: rgba(59,130,246,.35)}
+    .btn.primary{
+      background: rgba(59,130,246,.14);
+      border-color: rgba(59,130,246,.35);
+    }
+    .btn.good{
+      background: rgba(16,185,129,.12);
+      border-color: rgba(16,185,129,.35);
+    }
+    .btn.warn{
+      background: rgba(245,158,11,.12);
+      border-color: rgba(245,158,11,.40);
+    }
+
+    .fcgrid{
+      display:grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 12px;
+    }
+    @media(min-width: 740px){
+      .fcgrid{grid-template-columns: repeat(2, 1fr);}
+    }
+    @media(min-width: 1040px){
+      .fcgrid{grid-template-columns: repeat(3, 1fr);}
+    }
+
+    .card{
+      perspective: 1000px;
+      min-height: 140px;
+    }
+    .cardInner{
+      position:relative;
+      width:100%;
+      min-height: 140px;
+      transform-style: preserve-3d;
+      transition: transform .5s ease;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card.flipped .cardInner{transform: rotateY(180deg)}
+    .face{
+      position:absolute; inset:0;
+      backface-visibility: hidden;
+      background: var(--panel);
+      border: 1px solid rgba(229,231,235,.95);
+      border-radius: var(--radius);
+      padding: 14px;
+      display:flex; flex-direction:column; justify-content:space-between;
+      overflow:hidden;
+    }
+    .back{
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, rgba(16,185,129,.10), rgba(59,130,246,.10));
+    }
+    .fcQ{
+      font-weight: 800;
+      letter-spacing:-0.01em;
+    }
+    .fcA{
+      color: var(--ink);
+    }
+    .fcHint{
+      margin-top: 10px;
+      font-size: .9rem;
+      color: var(--muted);
+    }
+
+    .foot{
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .hide{display:none !important;}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <div>
+          <h1>Ripasso (2 ore): Scomposizione di polinomi + Regola/Teorema di Ruffini</h1>
+          <div class="meta">
+            Obiettivo: consolidare metodi di fattorizzazione e uso di Ruffini (divisione, resto, zeri, scomposizione).
+          </div>
+        </div>
+      </div>
+
+      <div class="pillrow" aria-label="Struttura lezione">
+        <div class="pill"><span class="dot"></span><b>0–15'</b> ripasso concetti chiave</div>
+        <div class="pill"><span class="dot g"></span><b>15–55'</b> teoria guidata + esempi</div>
+        <div class="pill"><span class="dot y"></span><b>55–105'</b> esercizi (con soluzioni)</div>
+        <div class="pill"><span class="dot"></span><b>105–120'</b> flashcard + verifica veloce</div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Schede lezione">
+        <button class="tabbtn" role="tab" aria-selected="true" aria-controls="tab-teoria" id="btn-teoria">Scheda teoria</button>
+        <button class="tabbtn" role="tab" aria-selected="false" aria-controls="tab-esercizi" id="btn-esercizi">Scheda esercizi</button>
+        <button class="tabbtn" role="tab" aria-selected="false" aria-controls="tab-flash" id="btn-flash">Flashcard</button>
+      </div>
+    </header>
+
+    <!-- ===================== TEORIA ===================== -->
+    <section id="tab-teoria" class="panel" role="tabpanel" aria-labelledby="btn-teoria">
+      <div class="grid two">
+        <div>
+          <h2>1) Idee base: “scomporre” significa fattorizzare</h2>
+          <p>
+            Scomporre un polinomio significa riscriverlo come prodotto di polinomi di grado minore.
+            Per esempio: $x^4-1=(x^2-1)(x^2+1)=(x-1)(x+1)(x^2+1)$.
+          </p>
+
+          <div class="callout">
+            <b>Perché è utile?</b>
+            <ul>
+              <li>semplificare frazioni algebriche;</li>
+              <li>risolvere equazioni: $P(x)=0$ diventa un prodotto uguale a zero;</li>
+              <li>studiare il segno di un polinomio e trovare gli zeri;</li>
+              <li>calcolare MCD/mcm tra polinomi.</li>
+            </ul>
+          </div>
+
+          <h3>2) Metodi classici di scomposizione (prima di Ruffini)</h3>
+          <div class="steps">
+            <ol>
+              <li><b>Raccoglimento a fattore comune</b> (numerico e/o letterale)</li>
+              <li><b>Raccoglimento parziale</b> (a gruppi)</li>
+              <li><b>Prodotti notevoli</b>: differenza di quadrati, quadrati/cubi di binomio, somma/differenza di cubi</li>
+              <li><b>Trinomi speciali di II grado</b> (quando il coefficiente di $x^2$ è 1)</li>
+              <li><b>Ruffini</b>: quando compare un divisore del tipo $x-a$</li>
+            </ol>
+          </div>
+
+          <h3>2.1 Raccoglimento a fattore comune</h3>
+          <p>
+            Se tutti i termini hanno un fattore comune, lo “metto in evidenza” usando la distributiva.
+          </p>
+          <div class="callout g">
+            <b>Esempio guidato</b><br/>
+            Scomponi $5x^4-10x^3-35x^2$.<br/>
+            <span class="muted">Passo 1:</span> cerca il fattore comune massimo: qui è $5x^2$.<br/>
+            <span class="muted">Passo 2:</span> raccogli: $$5x^4-10x^3-35x^2=5x^2(x^2-2x-7).$$
+          </div>
+
+          <h3>2.2 Raccoglimento parziale (a gruppi)</h3>
+          <p>
+            Raggruppo i termini per evidenziare un fattore comune in ciascun gruppo, poi raccolgo il fattore comune “finale”.
+          </p>
+          <div class="callout g">
+            <b>Esempio guidato</b><br/>
+            Scomponi $ac+bc+ad+bd$.<br/>
+            $$ac+bc+ad+bd=c(a+b)+d(a+b)=(a+b)(c+d).$$
+          </div>
+
+          <h3>2.3 Prodotti notevoli “al contrario”</h3>
+          <p>
+            Riconosco forme note: ad esempio $A^2-B^2=(A-B)(A+B)$.
+          </p>
+          <div class="callout g">
+            <b>Esempio</b><br/>
+            $$9x^2-y^4=(3x)^2-(y^2)^2=(3x-y^2)(3x+y^2).$$
+          </div>
+
+          <h3>2.4 Trinomio speciale $x^2+sx+p$</h3>
+          <p>
+            Se il coefficiente di $x^2$ è $1$, cerco $a,b$ tali che:
+            $$a+b=s,\qquad ab=p,$$
+            e allora $x^2+sx+p=(x+a)(x+b)$.
+          </p>
+          <div class="callout g">
+            <b>Esempio</b><br/>
+            $$x^2+8x+15=(x+3)(x+5)\quad \text{perché }3+5=8,\;3\cdot 5=15.$$
+          </div>
+        </div>
+
+        <div>
+          <h2>3) Regola di Ruffini: divisione veloce per $(x-a)$</h2>
+          <p class="muted">
+            Quando dividi un polinomio $A(x)$ per un binomio del tipo $(x-a)$, puoi usare la “tabella” di Ruffini per ottenere
+            rapidamente i coefficienti del quoziente e il resto.
+          </p>
+
+          <div class="callout">
+            <b>Checklist prima di partire</b>
+            <ul>
+              <li>ordina $A(x)$ in potenze decrescenti;</li>
+              <li>se manca un termine, inserisci coefficiente $0$ (polinomio “incompleto”);</li>
+              <li>nella tabella scrivi <b>$a$</b> (attenzione al segno: se il divisore è $x-4$, allora $a=4$; se è $x+2$, allora $a=-2$).</li>
+            </ul>
+          </div>
+
+          <h3>Esempio completo (con controllo)</h3>
+          <p>
+            Dividi $A(x)=3x^2-10x-9$ per $(x-4)$.
+          </p>
+          <div class="callout y">
+            <div class="steps">
+              <ol>
+                <li>Coefficienti: $3,\,-10,\,-9$; qui $a=4$.</li>
+                <li>Abbasso 3.</li>
+                <li>$3\cdot 4=12$, sommo: $-10+12=2$.</li>
+                <li>$2\cdot 4=8$, sommo: $-9+8=-1$ (resto).</li>
+              </ol>
+            </div>
+            <p>
+              Quoziente $Q(x)=3x+2$, resto $R=-1$. Quindi:
+              $$3x^2-10x-9=(x-4)(3x+2)-1.$$
+            </p>
+          </div>
+
+          <hr class="hr"/>
+
+          <h2>4) Teorema del resto</h2>
+          <p>
+            Se dividi $A(x)$ per $(x-a)$, il resto è il valore di $A$ calcolato in $a$:
+            $$R=A(a).$$
+          </p>
+          <div class="callout g">
+            <b>Esempio rapido</b><br/>
+            Resto di $(x^4+3x^2-5)$ diviso per $(x+2)$.
+            Poiché $x+2=x-(-2)$, qui $a=-2$.<br/>
+            $$R=A(-2)=(-2)^4+3(-2)^2-5=16+12-5=23.$$
+          </div>
+
+          <h2>5) Teorema di Ruffini (criterio di divisibilità)</h2>
+          <p>
+            Un polinomio $A(x)$ è divisibile per $(x-a)$ <b>se e solo se</b> $A(a)=0$:
+            $$A(x)\ \text{divisibile per }(x-a)\ \Longleftrightarrow\ A(a)=0.$$
+          </p>
+
+          <div class="callout">
+            <b>Conseguenza fondamentale</b>
+            <p class="muted">
+              Se trovi uno zero $a$ (cioè $A(a)=0$), allora puoi scomporre:
+              $$A(x)=(x-a)\,Q(x)$$
+              dove $Q(x)$ lo ottieni con la regola di Ruffini.
+            </p>
+          </div>
+
+          <h3>Come cercare zeri “candidati”</h3>
+          <p>
+            Se $A(x)$ ha coefficienti interi, eventuali zeri interi stanno tra i divisori del termine noto.
+            Più in generale, eventuali zeri razionali stanno tra le frazioni $\frac{m}{n}$ con $m$ divisore del termine noto e
+            $n$ divisore del coefficiente del termine di grado massimo.
+          </p>
+
+          <div class="callout y">
+            <b>Mini-strategia (molto pratica)</b>
+            <ol>
+              <li>Prova prima zeri interi piccoli: $\pm 1,\pm 2,\pm 3,\dots$ (divisori del termine noto).</li>
+              <li>Se trovi $A(a)=0$, fattorizza $(x-a)$ e riduci il grado con Ruffini.</li>
+              <li>Ripeti sul quoziente finché possibile.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <hr class="hr"/>
+
+      <h2>6) Esempi di “percorso completo” (metodo + Ruffini)</h2>
+
+      <div class="grid two">
+        <div class="callout g">
+          <b>Esempio A – Scomposizione con zero intero</b><br/>
+          Scomponi $A(x)=2x^3-5x^2+5x-6$.<br/><br/>
+          <span class="muted">1) Candidati:</span> divisori di $-6$: $\pm1,\pm2,\pm3,\pm6$.<br/>
+          <span class="muted">2) Provo $x=2$:</span> $A(2)=2\cdot 8-5\cdot 4+10-6=16-20+10-6=0$. Quindi $(x-2)$ è fattore.<br/>
+          <span class="muted">3) Ruffini con $a=2$ sui coefficienti $2,-5,5,-6$:</span> ottieni $Q(x)=2x^2-x+3$.<br/>
+          <span class="muted">Risultato:</span> $$A(x)=(x-2)(2x^2-x+3).$$
+          <div class="muted">Nota: il quadratico potrebbe essere irriducibile in $\mathbb{R}$ se $\Delta<0$.</div>
+        </div>
+
+        <div class="callout g">
+          <b>Esempio B – Prima un prodotto notevole, poi Ruffini</b><br/>
+          Scomponi $B(x)=x^4-1$.<br/><br/>
+          <span class="muted">1) Differenza di quadrati:</span> $x^4-1=(x^2-1)(x^2+1)$.<br/>
+          <span class="muted">2) Ancora differenza di quadrati:</span> $x^2-1=(x-1)(x+1)$.<br/>
+          <span class="muted">Conclusione:</span> $$x^4-1=(x-1)(x+1)(x^2+1).$$
+          <div class="muted">Verifica “in stile Ruffini”: $B(1)=0$ e $B(-1)=0$.</div>
+        </div>
+      </div>
+
+      <div class="foot">
+        Suggerimento didattico: negli esercizi, chiedi spesso “<i>Qual è la mossa più economica?</i>”
+        (raccoglimento? prodotto notevole? trinomio? oppure serve Ruffini?).
+      </div>
+    </section>
+
+    <!-- ===================== ESERCIZI ===================== -->
+    <section id="tab-esercizi" class="panel hide" role="tabpanel" aria-labelledby="btn-esercizi">
+      <div class="sectionTitle">
+        <h2>Esercizi con svolgimento a scomparsa</h2>
+        <span class="tag">4 sezioni · 10 esercizi ciascuna · totale 40</span>
+      </div>
+      <p class="muted">
+        Consiglio per la lezione privata: per ogni esercizio prova prima <b>30–60 secondi</b> a individuare “la tipologia”.
+        Poi svolgi. Solo alla fine apri lo svolgimento.
+      </p>
+
+      <hr class="hr"/>
+
+      <h3>A) Raccoglimento a fattore comune e parziale (10)</h3>
+
+      <details><summary>1) $6x^3+9x^2$</summary>
+        <div class="sol">
+          Fattore comune $3x^2$: $$6x^3+9x^2=3x^2(2x+3).$$
+        </div>
+      </details>
+
+      <details><summary>2) $5a^2b-10ab^2$</summary>
+        <div class="sol">
+          Fattore comune $5ab$: $$5a^2b-10ab^2=5ab(a-2b).$$
+        </div>
+      </details>
+
+      <details><summary>3) $12x^4-18x^2$</summary>
+        <div class="sol">
+          Fattore comune $6x^2$: $$12x^4-18x^2=6x^2(2x^2-3).$$
+        </div>
+      </details>
+
+      <details><summary>4) $7m^3n+14m^2n^2$</summary>
+        <div class="sol">
+          Fattore comune $7m^2n$: $$7m^3n+14m^2n^2=7m^2n(m+2n).$$
+        </div>
+      </details>
+
+      <details><summary>5) $ax+ay+bx+by$</summary>
+        <div class="sol">
+          Raccoglimento parziale: $$ax+ay+bx+by=a(x+y)+b(x+y)=(a+b)(x+y).$$
+        </div>
+      </details>
+
+      <details><summary>6) $3x^2-3x+6$</summary>
+        <div class="sol">
+          Fattore comune $3$: $$3x^2-3x+6=3(x^2-x+2).$$
+        </div>
+      </details>
+
+      <details><summary>7) $2p(q-r)+3(q-r)$</summary>
+        <div class="sol">
+          Fattore comune $(q-r)$: $$2p(q-r)+3(q-r)=(q-r)(2p+3).$$
+        </div>
+      </details>
+
+      <details><summary>8) $x^2y-xy^2+xz^2-yz^2$</summary>
+        <div class="sol">
+          Raggruppa: $x^2y-xy^2=xy(x-y)$ e $xz^2-yz^2=z^2(x-y)$.<br/>
+          Quindi $$x^2y-xy^2+xz^2-yz^2=(x-y)(xy+z^2).$$
+        </div>
+      </details>
+
+      <details><summary>9) $4a^2-8a$</summary>
+        <div class="sol">
+          Fattore comune $4a$: $$4a^2-8a=4a(a-2).$$
+        </div>
+      </details>
+
+      <details><summary>10) $5x^2-10x+5$</summary>
+        <div class="sol">
+          Fattore comune $5$: $$5x^2-10x+5=5(x^2-2x+1)=5(x-1)^2.$$
+        </div>
+      </details>
+
+      <hr class="hr"/>
+
+      <h3>B) Prodotti notevoli e trinomi speciali (10)</h3>
+
+      <details><summary>1) $x^2-25$</summary>
+        <div class="sol">
+          Differenza di quadrati: $$x^2-25=(x-5)(x+5).$$
+        </div>
+      </details>
+
+      <details><summary>2) $9x^2-y^4$</summary>
+        <div class="sol">
+          $$9x^2-y^4=(3x)^2-(y^2)^2=(3x-y^2)(3x+y^2).$$
+        </div>
+      </details>
+
+      <details><summary>3) $x^2+7x+12$</summary>
+        <div class="sol">
+          Cerca $a,b$ con $a+b=7$, $ab=12$: $3$ e $4$.<br/>
+          $$x^2+7x+12=(x+3)(x+4).$$
+        </div>
+      </details>
+
+      <details><summary>4) $y^2-3y-10$</summary>
+        <div class="sol">
+          $a+b=-3$, $ab=-10$: $2$ e $-5$.<br/>
+          $$y^2-3y-10=(y+2)(y-5).$$
+        </div>
+      </details>
+
+      <details><summary>5) $a^2+2ab+b^2$</summary>
+        <div class="sol">
+          Quadrato di binomio: $$a^2+2ab+b^2=(a+b)^2.$$
+        </div>
+      </details>
+
+      <details><summary>6) $a^2-2ab+b^2$</summary>
+        <div class="sol">
+          $$a^2-2ab+b^2=(a-b)^2.$$
+        </div>
+      </details>
+
+      <details><summary>7) $x^3-27$</summary>
+        <div class="sol">
+          Differenza di cubi: $$x^3-27=(x-3)(x^2+3x+9).$$
+        </div>
+      </details>
+
+      <details><summary>8) $x^3+8$</summary>
+        <div class="sol">
+          Somma di cubi: $$x^3+8=(x+2)(x^2-2x+4).$$
+        </div>
+      </details>
+
+      <details><summary>9) $4x^2+12x+9$</summary>
+        <div class="sol">
+          Quadrato perfetto: $$4x^2+12x+9=(2x+3)^2.$$
+        </div>
+      </details>
+
+      <details><summary>10) $x^2-8x+15$</summary>
+        <div class="sol">
+          $a+b=-8$, $ab=15$: $-3$ e $-5$.<br/>
+          $$x^2-8x+15=(x-3)(x-5).$$
+        </div>
+      </details>
+
+      <hr class="hr"/>
+
+      <h3>C) Divisioni con la regola di Ruffini (quoziente e resto) (10)</h3>
+
+      <details><summary>1) $(x^3-6x^2+11x-6):(x-1)$</summary>
+        <div class="sol">
+          Con $a=1$ su $1,-6,11,-6$ → quoziente $x^2-5x+6$, resto $0$.<br/>
+          $$x^3-6x^2+11x-6=(x-1)(x^2-5x+6).$$
+        </div>
+      </details>
+
+      <details><summary>2) $(2x^3-9x+1):(x-3)$</summary>
+        <div class="sol">
+          Attenzione: polinomio incompleto ($2x^3+0x^2-9x+1$). $a=3$.<br/>
+          Tabella → $Q(x)=2x^2+6x+9$, resto $28$.<br/>
+          $$2x^3-9x+1=(x-3)(2x^2+6x+9)+28.$$
+        </div>
+      </details>
+
+      <details><summary>3) $(3x^3+x^2-8x+4):(x+2)$</summary>
+        <div class="sol">
+          Qui $x+2=x-(-2)$ quindi $a=-2$. Coefficienti $3,1,-8,4$.<br/>
+          Tabella → $Q(x)=3x^2-5x+2$, resto $0$.<br/>
+          $$3x^3+x^2-8x+4=(x+2)(3x^2-5x+2).$$
+        </div>
+      </details>
+
+      <details><summary>4) $(x^4-1):(x-1)$</summary>
+        <div class="sol">
+          $a=1$ su $1,0,0,0,-1$ → $Q(x)=x^3+x^2+x+1$, resto $0$.<br/>
+          $$x^4-1=(x-1)(x^3+x^2+x+1).$$
+        </div>
+      </details>
+
+      <details><summary>5) $(x^3+2x^2-5):(x-1)$</summary>
+        <div class="sol">
+          Incompleto: $x^3+2x^2+0x-5$. $a=1$.<br/>
+          Quoziente $x^2+3x+3$, resto $-2$.<br/>
+          $$x^3+2x^2-5=(x-1)(x^2+3x+3)-2.$$
+        </div>
+      </details>
+
+      <details><summary>6) $(4x^3-4x^2+x-1):(x-1)$</summary>
+        <div class="sol">
+          $a=1$ su $4,-4,1,-1$ → $Q(x)=4x^2+0x+1=4x^2+1$, resto $0$.<br/>
+          $$4x^3-4x^2+x-1=(x-1)(4x^2+1).$$
+        </div>
+      </details>
+
+      <details><summary>7) $(x^3-4x^2+2x+8):(x+2)$</summary>
+        <div class="sol">
+          $a=-2$ su $1,-4,2,8$ → $Q(x)=x^2-6x+14$, resto $-20$.<br/>
+          $$x^3-4x^2+2x+8=(x+2)(x^2-6x+14)-20.$$
+        </div>
+      </details>
+
+      <details><summary>8) $(5x^2-3x+7):(x-2)$</summary>
+        <div class="sol">
+          $a=2$ su $5,-3,7$ → $Q(x)=5x+7$, resto $21$.<br/>
+          $$5x^2-3x+7=(x-2)(5x+7)+21.$$
+        </div>
+      </details>
+
+      <details><summary>9) $(2x^4-x^2-1):(x-1)$</summary>
+        <div class="sol">
+          Incompleto: $2x^4+0x^3-1x^2+0x-1$. $a=1$.<br/>
+          Tabella → $Q(x)=2x^3+2x^2+x+1$, resto $0$.<br/>
+          $$2x^4-x^2-1=(x-1)(2x^3+2x^2+x+1).$$
+        </div>
+      </details>
+
+      <details><summary>10) $(x^3+3x^2+3x+1):(x+1)$</summary>
+        <div class="sol">
+          $a=-1$ su $1,3,3,1$ → $Q(x)=x^2+2x+1=(x+1)^2$, resto $0$.<br/>
+          $$x^3+3x^2+3x+1=(x+1)^3.$$
+        </div>
+      </details>
+
+      <hr class="hr"/>
+
+      <h3>D) Teorema del resto, zeri e scomposizione con Ruffini (10)</h3>
+
+      <details><summary>1) Resto di $A(x)=x^3-2x+5$ diviso per $(x-2)$</summary>
+        <div class="sol">
+          Teorema del resto: $R=A(2)=8-4+5=9$.
+        </div>
+      </details>
+
+      <details><summary>2) Resto di $B(x)=2x^4-3x^2+1$ diviso per $(x+1)$</summary>
+        <div class="sol">
+          $(x+1)=x-(-1)$ quindi $R=B(-1)=2\cdot 1-3\cdot 1+1=0$.<br/>
+          Quindi $(x+1)$ è fattore.
+        </div>
+      </details>
+
+      <details><summary>3) Verifica se $x^3-2x^2-13x+10$ è divisibile per $(x-5)$</summary>
+        <div class="sol">
+          Divisibile ⇔ $A(5)=0$.<br/>
+          $A(5)=125-50-65+10=20\neq 0$ → non divisibile.
+        </div>
+      </details>
+
+      <details><summary>4) Trova uno zero intero di $P(x)=x^3-6x^2+11x-6$ e scomponi</summary>
+        <div class="sol">
+          Divisori di $-6$: $\pm1,\pm2,\pm3,\pm6$.<br/>
+          $P(1)=0$ → fattore $(x-1)$. Con Ruffini ottieni $x^2-5x+6=(x-2)(x-3)$.<br/>
+          $$P(x)=(x-1)(x-2)(x-3).$$
+        </div>
+      </details>
+
+      <details><summary>5) Scomponi $Q(x)=2x^3-5x^2+5x-6$ sapendo che $2$ è uno zero</summary>
+        <div class="sol">
+          Se $2$ è uno zero, allora $(x-2)$ è fattore e il resto è 0.<br/>
+          Ruffini su $2,-5,5,-6$ con $a=2$ → $2x^2-x+3$.<br/>
+          $$Q(x)=(x-2)(2x^2-x+3).$$
+        </div>
+      </details>
+
+      <details><summary>6) Determina $k$ affinché $A(x)=x^2+kx+6$ sia divisibile per $(x-2)$</summary>
+        <div class="sol">
+          Divisibile ⇔ $A(2)=0$.<br/>
+          $A(2)=4+2k+6=10+2k=0 \Rightarrow k=-5$.
+        </div>
+      </details>
+
+      <details><summary>7) Determina $m$ affinché il resto di $A(x)=x^3+mx+1$ diviso per $(x-1)$ sia $5$</summary>
+        <div class="sol">
+          Resto $=A(1)=1+m+1=m+2$. Impongo $m+2=5 \Rightarrow m=3$.
+        </div>
+      </details>
+
+      <details><summary>8) Trova il resto di $A(x)=5x^2-3x+7$ diviso per $(x-2)$ senza fare Ruffini</summary>
+        <div class="sol">
+          Teorema del resto: $R=A(2)=5\cdot 4-3\cdot 2+7=20-6+7=21$.
+        </div>
+      </details>
+
+      <details><summary>9) Mostra che $x^3-27$ è divisibile per $(x-3)$ e completa la scomposizione</summary>
+        <div class="sol">
+          $A(3)=27-27=0$ → divisibile per $(x-3)$.<br/>
+          Nota formula: $$x^3-27=(x-3)(x^2+3x+9).$$
+        </div>
+      </details>
+
+      <details><summary>10) Scomponi $x^4+3x^2-4$ usando Ruffini dopo una sostituzione intelligente</summary>
+        <div class="sol">
+          Considera $t=x^2$. Allora $t^2+3t-4=(t+4)(t-1)$.<br/>
+          Quindi $$x^4+3x^2-4=(x^2+4)(x^2-1)=(x^2+4)(x-1)(x+1).$$
+        </div>
+      </details>
+
+      <div class="foot">
+        Se vuoi rendere la sessione più “a missioni”: scegli 2 esercizi per sezione come “obbligatori” e 1 come “bonus”.
+      </div>
+    </section>
+
+    <!-- ===================== FLASHCARDS ===================== -->
+    <section id="tab-flash" class="panel hide" role="tabpanel" aria-labelledby="btn-flash">
+      <div class="sectionTitle">
+        <h2>Flashcard (45)</h2>
+        <span class="tag">clicca una carta per girarla</span>
+      </div>
+
+      <div class="fcbar">
+        <div class="muted" id="fcCount">0 carte</div>
+        <div class="controls">
+          <button class="btn primary" id="btnShuffle">Mescola</button>
+          <button class="btn" id="btnShowAll">Scopri tutte</button>
+          <button class="btn" id="btnHideAll">Copri tutte</button>
+        </div>
+      </div>
+
+      <div class="fcgrid" id="fcGrid" aria-label="Griglia flashcard"></div>
+
+      <div class="foot muted">
+        Suggerimento: fai un giro rapido (solo definizioni), poi un giro “profondo” (con esempi e attenzione ai segni).
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ---------- Tabs ----------
+    const tabs = [
+      {btn: 'btn-teoria', panel: 'tab-teoria'},
+      {btn: 'btn-esercizi', panel: 'tab-esercizi'},
+      {btn: 'btn-flash', panel: 'tab-flash'},
+    ];
+
+    function activateTab(btnId){
+      for (const t of tabs){
+        const b = document.getElementById(t.btn);
+        const p = document.getElementById(t.panel);
+        const on = (t.btn === btnId);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+        p.classList.toggle('hide', !on);
+      }
+      // Re-render MathJax on tab switch (safe)
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    for (const t of tabs){
+      document.getElementById(t.btn).addEventListener('click', () => activateTab(t.btn));
+    }
+
+    // ---------- Flashcards data (45) ----------
+    const flashcards = [
+      // Definizioni e idee base
+      {q:"Che cosa significa scomporre (fattorizzare) un polinomio?", a:"Scriverlo come prodotto di polinomi di grado inferiore: $P(x)=F_1(x)\\cdot F_2(x)\\cdots$."},
+      {q:"Quando un polinomio si dice riducibile?", a:"Quando può essere scomposto nel prodotto di polinomi tutti di grado minore."},
+      {q:"Quando un polinomio si dice irriducibile?", a:"Quando non si può scomporre (nei polinomi a coefficienti reali/razionali in contesto scolastico)."},
+      {q:"Qual è la prima mossa da provare spesso?", a:"Il raccoglimento a fattore comune (numerico e/o letterale)."},
+      {q:"Qual è l’idea del raccoglimento parziale?", a:"Raggruppare termini per raccogliere fattori comuni in ciascun gruppo e poi un fattore comune finale."},
+
+      // Prodotti notevoli
+      {q:"Formula: differenza di quadrati", a:"$A^2-B^2=(A-B)(A+B)$."},
+      {q:"Formula: quadrato di binomio (somma)", a:"$(A+B)^2=A^2+2AB+B^2$."},
+      {q:"Formula: quadrato di binomio (differenza)", a:"$(A-B)^2=A^2-2AB+B^2$."},
+      {q:"Formula: somma di cubi", a:"$A^3+B^3=(A+B)(A^2-AB+B^2)$."},
+      {q:"Formula: differenza di cubi", a:"$A^3-B^3=(A-B)(A^2+AB+B^2)$."},
+
+      // Trinomi speciali
+      {q:"Quando puoi usare il metodo $x^2+sx+p$?", a:"Quando il coefficiente di $x^2$ è 1: cerchi $a,b$ con $a+b=s$ e $ab=p$."},
+      {q:"Esempio rapido: scomponi $x^2+8x+15$", a:"$(x+3)(x+5)$ perché $3+5=8$ e $3\\cdot 5=15$."},
+      {q:"Che cos’è un ‘quadrato perfetto’ di trinomio/bimomio?", a:"Un polinomio che si può scrivere come $(\\text{binomio})^2$, riconoscibile da termini quadrati e doppio prodotto."},
+
+      // Ruffini: struttura
+      {q:"Quando si può usare la regola di Ruffini?", a:"Quando il divisore è un binomio di primo grado del tipo $(x-a)$."},
+      {q:"Che grado ha il quoziente dividendo un polinomio di grado $n$ per $(x-a)$?", a:"Ha grado $n-1$."},
+      {q:"Che tipo di polinomio è il resto nella divisione per $(x-a)$?", a:"È un numero (grado 0), cioè un termine noto."},
+      {q:"Cosa fai se il polinomio dividendo è incompleto?", a:"Inserisci i coefficienti 0 per i gradi mancanti prima di fare Ruffini."},
+      {q:"Se il divisore è $(x+2)$, qual è $a$ in Ruffini?", a:"$x+2=x-(-2)$ quindi $a=-2$."},
+
+      // Teorema del resto
+      {q:"Enuncia il teorema del resto", a:"Dividendo $A(x)$ per $(x-a)$, il resto è $R=A(a)$."},
+      {q:"Come calcoli un resto senza eseguire la divisione?", a:"Valuti il polinomio in $x=a$: $R=A(a)$."},
+      {q:"Resto di $A(x)$ nella divisione per $(x+1)$?", a:"È $A(-1)$ perché $x+1=x-(-1)$."},
+
+      // Teorema di Ruffini (criterio)
+      {q:"Enuncia il teorema di Ruffini (criterio di divisibilità)", a:"$A(x)$ è divisibile per $(x-a)$ se e solo se $A(a)=0$."},
+      {q:"Cosa significa che $a$ è uno zero (radice) di $A(x)$?", a:"Significa $A(a)=0$."},
+      {q:"Se $A(a)=0$, cosa puoi dire di $(x-a)$?", a:"Che $(x-a)$ è un fattore di $A(x)$."},
+      {q:"Dopo aver trovato uno zero, come prosegui la scomposizione?", a:"Esegui Ruffini per ottenere il quoziente e ripeti sul quoziente."},
+
+      // Ricerca zeri
+      {q:"Regola pratica: dove cerchi zeri interi di un polinomio a coefficienti interi?", a:"Tra i divisori del termine noto."},
+      {q:"Dove cerchi zeri razionali (eventuali)?", a:"Tra $\\frac{m}{n}$ con $m$ divisore del termine noto e $n$ divisore del coefficiente del termine di grado massimo."},
+      {q:"È vero che tutti i divisori del termine noto sono zeri?", a:"No. Sono solo candidati: va verificato $A(a)=0$."},
+
+      // Errori tipici
+      {q:"Errore tipico con Ruffini: segno di $a$. Come evitarlo?", a:"Scrivi il divisore come $(x-a)$: allora nella tabella metti proprio $a$."},
+      {q:"Errore tipico: polinomio disordinato. Cosa fai prima?", a:"Ordini in potenze decrescenti e completi con zeri i gradi mancanti."},
+      {q:"Nella scomposizione, cosa NON si semplifica mai?", a:"Gli addendi: si semplificano solo fattori."},
+
+      // Mini-quiz operativi
+      {q:"Scomponi mentalmente: $x^2-1$", a:"$(x-1)(x+1)$."},
+      {q:"Scomponi mentalmente: $x^3-8$", a:"$(x-2)(x^2+2x+4)$."},
+      {q:"Scomponi mentalmente: $x^3+27$", a:"$(x+3)(x^2-3x+9)$."},
+      {q:"Scomponi mentalmente: $4x^2+12x+9$", a:"$(2x+3)^2$."},
+      {q:"Se $A(2)=0$, qual è un fattore di $A(x)$?", a:"$(x-2)$."},
+      {q:"Se il resto della divisione per $(x-3)$ è 0, cosa conclude?", a:"Che $A(3)=0$ e quindi $(x-3)$ divide $A(x)$."},
+
+      // Collegamenti logici
+      {q:"Qual è il legame tra divisione e fattorizzazione?", a:"Se $A(x)=(x-a)Q(x)+R$ e $R=0$, allora $A(x)=(x-a)Q(x)$ è una scomposizione."},
+      {q:"Perché il teorema del resto rende ‘veloce’ il controllo di divisibilità?", a:"Perché basta calcolare $A(a)$ invece di fare tutta la divisione."},
+      {q:"Se ottieni $A(x)=(x-a)Q(x)$, cosa rappresenta $a$?", a:"Uno zero di $A(x)$ e anche una soluzione dell’equazione $A(x)=0$."},
+
+      // Approfondimenti “light”
+      {q:"Cosa sono i ‘falsi quadrati’ citati spesso con i cubi?", a:"Espressioni come $x^2+ax+a^2$ o $x^2-ax+a^2$ che somigliano a un quadrato ma non hanno il doppio prodotto."},
+      {q:"Perché in $A^3-B^3$ compare $A^2+AB+B^2$?", a:"È il quoziente della divisione di $A^3-B^3$ per $(A-B)$ (fattorizzazione standard)."},
+      {q:"Perché si inseriscono zeri nei coefficienti mancanti in Ruffini?", a:"Per mantenere l’allineamento corretto dei gradi e ottenere i coefficienti giusti del quoziente."},
+
+      // Ultime 3 per arrivare a 45
+      {q:"Se dividi un polinomio di grado 5 per $(x-a)$, di che grado è il quoziente?", a:"Di grado 4."},
+      {q:"Cosa controlli per capire se un quadratico è ulteriormente scomponibile (in $\\mathbb{R}$)?", a:"Il discriminante: $\\Delta=b^2-4ac$."},
+      {q:"Qual è la ‘sequenza’ consigliata per scomporre un polinomio in pratica?", a:"1) raccoglimento, 2) prodotti notevoli/trinomi, 3) cerca zeri e usa Ruffini, 4) ripeti finché possibile."},
+    ];
+
+    const fcGrid = document.getElementById('fcGrid');
+    const fcCount = document.getElementById('fcCount');
+
+    function renderFlashcards(list){
+      fcGrid.innerHTML = '';
+      for (let i=0; i<list.length; i++){
+        const item = list[i];
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.tabIndex = 0;
+        card.setAttribute('role','button');
+        card.setAttribute('aria-label','Flashcard: clicca per girare');
+
+        card.innerHTML = `
+          <div class="cardInner">
+            <div class="face front">
+              <div class="fcQ">${i+1}. ${item.q}</div>
+              <div class="fcHint">Suggerimento: prova a rispondere in 10–15 secondi.</div>
+            </div>
+            <div class="face back">
+              <div class="fcQ">Risposta</div>
+              <div class="fcA">${item.a}</div>
+              <div class="fcHint">Clicca di nuovo per tornare alla domanda.</div>
+            </div>
+          </div>
+        `;
+        const toggle = () => {
+          card.classList.toggle('flipped');
+          if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([card]);
+          }
+        };
+        card.addEventListener('click', toggle);
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+
+        fcGrid.appendChild(card);
+      }
+      fcCount.textContent = `${list.length} carte`;
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for (let i=a.length-1; i>0; i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    document.getElementById('btnShuffle').addEventListener('click', () => {
+      renderFlashcards(shuffle(flashcards));
+    });
+
+    document.getElementById('btnShowAll').addEventListener('click', () => {
+      document.querySelectorAll('.card').forEach(c => c.classList.add('flipped'));
+      if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+    });
+
+    document.getElementById('btnHideAll').addEventListener('click', () => {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('flipped'));
+      if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+    });
+
+    // initial render
+    renderFlashcards(flashcards);
+  </script>
+</body>
+</html>
